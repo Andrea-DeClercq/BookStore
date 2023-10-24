@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{path('app_dashboard')}}">BookStore</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarScroll">
+        <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+            <li class="nav-item">
+                <a class="nav-link active" href=
+                    {% if is_granted('IS_AUTHENTICATED') %}
+                        "{{path('view_my_annonce')}}"
+                    {% else %}
+                        "{{path('app_login')}}"
+                    {% endif %}
+                >
+                Mes emprunts </a>
+            </li> 
+        </ul>
+        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        <span class="navbar-text">
+            Bonjour, {{ app.user.username }} 
+        </span>
+        <span> - </span>
+        <span class="navbar-text">
+            <a class="nav-link active" href="{{path('app_logout')}}">Déconnexion</a>
+        </span>
+        {% else %}
+            <span class="navbar-text">
+                <a class="nav-link active" href="{{path('app_login')}}">Se connecter</a>
+            </span>
+            <span> - </span>
+            <span class="navbar-text">
+                <a class="nav-link active" href="{{path('app_register')}}">S'inscrire</a>
+            </span>
+            {% endif %}
+        </div> 
+    </div>
+</nav>

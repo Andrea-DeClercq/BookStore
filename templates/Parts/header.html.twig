@@ -9,7 +9,7 @@
             <li class="nav-item">
                 <a class="nav-link active" href=
                     {% if is_granted('IS_AUTHENTICATED') %}
-                        "{{path('view_my_annonce')}}"
+                        {# "{{path('view_my_annonce')}}" #}
                     {% else %}
                         "{{path('app_login')}}"
                     {% endif %}

@@ -28,8 +28,8 @@ class Book
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $release_date = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?bool $archived = null;
+    #[ORM\Column()]
+    private ?bool $archived = false;
 
     #[ORM\ManyToMany(targetEntity: Author::class, inversedBy: 'books')]
     private Collection $authors;

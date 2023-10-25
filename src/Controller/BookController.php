@@ -31,7 +31,10 @@ class BookController extends AbstractController
     #[Route('/{id}', name: ('info'))]
     public function getBooksInfo(int $id){
         # Affiche les informations d'un bouquin
-        return new Response($id);
+        $book = $this->em->getRepository(Book::class)->findOneBy(['id' => $id]);
+        return $this->render('book/book_info.html.twig', [
+            'book' => $book,
+        ]);
     }
 
     public function rentBook(int $id){

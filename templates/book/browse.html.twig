@@ -3,24 +3,27 @@
 {% block title %}Browse our bookshelf{% endblock %}
 
 {% block body %}
-    <div class="col-auto" style="margin: 25px;">
-      <div class="row">
-            {% for book in bookList %}
-                <div class="card" style="width: 18rem;">
-                    {# <img src="{{ asset('build/images/sale.png') }}" class="card-img-top" alt="SALE IMAGE"> #}
-                    <div class="card-body">
-                        <h3 class="card-title">{{ book.title }}</h3>
-                        <h5 class="card-title"> Release : {{ book.releaseDate|date('d/m/Y') }} </h5>
-                        <p class="card-text">{{ book.description|u.truncate(20, '...')}}</p>
-                        <p class="card-text">
-                            {% for author in book.getAuthors() %}
-                                {{ author.firstname }} {{ author.lastname }}</p>
-                            {% endfor %}
-                        <a href="{{path('app_book_info', {id: book.id}) }}" class="btn btn-primary">Voir les détails</a>
-                        
+<section class="content">
+    <div class="container-fluid">
+        <div class="offset-2 col-auto">
+            <div class="row">
+                {% for book in bookList %}
+                    <div class="col-3 book_card card">
+                        {# <img src="{{ asset('build/images/sale.png') }}" class="card-img-top" alt="SALE IMAGE"> #}
+                        <div class="card-body">
+                            <h3 class="card-title">{{ book.title|u. truncate(25, '...') }}</h3>
+                            <h5 class="card-title"> Release : {{ book.releaseDate|date('d/m/Y') }} </h5>
+                            <p class="card-text">{{ book.description|u.truncate(20, '...')}}</p>
+                            <p class="card-text">
+                                {% for author in book.getAuthors() %}
+                                    {{ author.firstname }} {{ author.lastname }}</p>
+                                {% endfor %}
+                            <a href="{{path('app_book_info', {id: book.id}) }}" class="btn btn-primary">Voir les détails</a>                 
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     </div>
+</section>
 {% endblock %}

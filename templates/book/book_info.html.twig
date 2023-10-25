@@ -27,18 +27,21 @@
                     </div>
                     </br>
                     <div class="row">
-                        {# <div class="col-8">
-                            <p>Publier le {{ annonce.createdAt|date('d/m/Y H:m')}} 
+                        <div class="col-8">
+                            <p> Etat : 
                                 {% if annonce.updatedAt is defined and annonce.updatedAt is not empty %}
-                                - Dernière modification le {{ annonce.updatedAt|date('d/m/Y H:m') }}
-                                {% endif %}</p>
+                                    {{ book.status }} à la date {{ book.updatedAt|date('d/m/Y H:m')}} 
+                                {% else %} 
+                                    {{ book.status }} à la date {{ book.createdAt|date('d/m/Y H:m')}} 
+                                {% endif %}
+                                </p>
                         </div>
                         <div class="col-4">
                         {% if is_granted('IS_AUTHENTICATED_FULLY') and annonce.AnnonceByUser.getId() == app.user.id %}
                             <a href="{{ path('edit_annonce', { id: annonce.id }) }}" class="btn btn-success">Modifier</a>
                             <a href="{{ path('delete_annonce', { id: annonce.id }) }}"  class="btn btn-danger">Supprimer</a>
                         {% endif %}
-                        </div> #}
+                        </div>
                     </div>   
                 </div>
             </div>

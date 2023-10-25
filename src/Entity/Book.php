@@ -12,6 +12,29 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\HasLifecycleCallbacks]
 class Book
 {
+    public const NEW = 'Neuf';
+    public const SLIGHTLY_SCRATCHED = 'Légèrement écorché';
+    public const FOLDED = 'Plié';
+    public const DEFORMED = 'Déformé';
+    public const DAMAGED_COVER = 'Couverture abîmé';
+    public const FRAGILE = 'Fragile';
+    public const MISSING_PAGES = 'Pages manquantes';
+    public const PENCIL_MARK = 'Marques de crayon';
+    public const OCCASION = 'Occasion';
+    public const CORRECT = 'Correct';
+    public const STATUS = [
+        self::NEW => 'Neuf',
+        self::SLIGHTLY_SCRATCHED => 'Légèrement écorché',
+        self::FOLDED => 'Plié',
+        self::DEFORMED => 'Déformé',
+        self::DAMAGED_COVER => 'Couverture abîmé',
+        self::FRAGILE => 'Fragile',
+        self::MISSING_PAGES => 'Pages manquantes',
+        self::PENCIL_MARK => 'Marque de crayon',
+        self::OCCASION => 'Occasion',
+        self::CORRECT => 'Correct',
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

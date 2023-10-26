@@ -3,10 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\RentRepository;
+use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RentRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Rent
 {
     #[ORM\Id]
@@ -15,66 +17,64 @@ class Rent
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $borrow_date = null;
+    private ?\DateTimeInterface $borrowedDate = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $return_date = null;
-
-    #[ORM\OneToOne(inversedBy: 'rent', cascade: ['persist', 'remove'])]
-    private ?Book $borrow_book = null;
+    private ?\DateTimeInterface $returnDate = null;
 
     #[ORM\ManyToOne(inversedBy: 'rents')]
-    private ?User $borrowed_by = null;
+    private ?User $user = null;
+
+    #[ORM\ManyToOne(inversedBy: 'rents')]
+    private ?Book $book = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getBorrowDate(): ?\DateTimeInterface
+    public function getBorrowedDate(): ?\DateTimeInterface
     {
-        return $this->borrow_date;
+        return $this->borrowedDate;
     }
 
-    public function setBorrowDate(?\DateTimeInterface $borrow_date): static
+    #[ORM\PrePersist]
+    public function setBorrowedDate(): void
     {
-        $this->borrow_date = $borrow_date;
-
-        return $this;
+        $this->borrowedDate = new DateTime();
     }
 
     public function getReturnDate(): ?\DateTimeInterface
     {
-        return $this->return_date;
+        return $this->returnDate;
     }
 
-    public function setReturnDate(?\DateTimeInterface $return_date): static
+    #[ORM\PrePersist]
+    public function setReturnDate(): void
     {
-        $this->return_date = $return_date;
+        $this->returnDate = new DateTime('+2 weeks');
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
 
-    public function getBorrowBook(): ?Book
+    public function getBook(): ?Book
     {
-        return $this->borrow_book;
+        return $this->book;
     }
 
-    public function setBorrowBook(?Book $borrow_book): static
+    public function setBook(?Book $book): static
     {
-        $this->borrow_book = $borrow_book;
-
-        return $this;
-    }
-
-    public function getBorrowedBy(): ?User
-    {
-        return $this->borrowed_by;
-    }
-
-    public function setBorrowedBy(?User $borrowed_by): static
-    {
-        $this->borrowed_by = $borrowed_by;
+        $this->book = $book;
 
         return $this;
     }

@@ -27,20 +27,31 @@
                     </div>
                     </br>
                     <div class="row">
-                        <div class="col-8">
-                            <p> Etat : 
-                                {% if annonce.updatedAt is defined and annonce.updatedAt is not empty %}
-                                    {{ book.status }} à la date {{ book.updatedAt|date('d/m/Y H:m')}} 
-                                {% else %} 
-                                    {{ book.status }} à la date {{ book.createdAt|date('d/m/Y H:m')}} 
-                                {% endif %}
-                                </p>
+                        <div class="col-4">
+                            <p> Etat : {{ book.status }}</p>
                         </div>
                         <div class="col-4">
-                        {% if is_granted('IS_AUTHENTICATED_FULLY') and annonce.AnnonceByUser.getId() == app.user.id %}
-                            <a href="{{ path('edit_annonce', { id: annonce.id }) }}" class="btn btn-success">Modifier</a>
-                            <a href="{{ path('delete_annonce', { id: annonce.id }) }}"  class="btn btn-danger">Supprimer</a>
-                        {% endif %}
+                            {% if annonce.updatedAt is defined and annonce.updatedAt is not empty %}
+                                    Dernière restitution {{ book.updatedAt|date('d/m/Y H:m')}} 
+                            {% else %} 
+                                    Dernière restitution {{ book.createdAt|date('d/m/Y H:m')}} 
+                            {% endif %}
+                        </div>
+                        <div class="col-4">
+                            {% if is_granted('IS_AUTHENTICATED') 
+                                and book.archived == false %}
+                                    {% if book.getRents() is defined
+                                        and book.getRents() is empty %}
+                                        <a href="{{ path('app_book_rent', { id: book.id }) }}" class="btn btn-success">Emprunter</a>
+                                    {% elseif book.getRents().getValues()[0].getUser() == app.user %}
+                                        <a href="{{ path('app_book_restitute', { id: book.id }) }}" class="btn btn-success">Restituer</a>
+                                    {% endif %}
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        <a href="{{ path('app_book_archived', { id: book.id }) }}"  class="btn btn-danger">Archiver</a>
+                                    {% endif %}
+                                {% elseif is_granted('IS_AUTHENTICATED') and book.archived == true %}
+                                <p><b>Archivé</b></p>
+                            {% endif %}
                         </div>
                     </div>   
                 </div>

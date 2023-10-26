@@ -58,18 +58,19 @@ class Book
     #[ORM\ManyToMany(targetEntity: Author::class, inversedBy: 'books')]
     private Collection $authors;
 
-    #[ORM\OneToOne(mappedBy: 'borrow_book', cascade: ['persist', 'remove'])]
-    private ?Rent $rent = null;
-
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\OneToMany(mappedBy: 'book', targetEntity: Rent::class)]
+    private Collection $rents;
+
     public function __construct()
     {
         $this->authors = new ArrayCollection();
+        $this->rents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -160,29 +161,7 @@ class Book
 
         return $this;
     }
-
-    public function getRent(): ?Rent
-    {
-        return $this->rent;
-    }
-
-    public function setRent(?Rent $rent): static
-    {
-        // unset the owning side of the relation if necessary
-        if ($rent === null && $this->rent !== null) {
-            $this->rent->setBorrowBook(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($rent !== null && $rent->getBorrowBook() !== $this) {
-            $rent->setBorrowBook($this);
-        }
-
-        $this->rent = $rent;
-
-        return $this;
-    }
-
+    
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -203,5 +182,35 @@ class Book
     public function setUpdateAt(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    /**
+     * @return Collection<int, Rent>
+     */
+    public function getRents(): Collection
+    {
+        return $this->rents;
+    }
+
+    public function addRent(Rent $rent): static
+    {
+        if (!$this->rents->contains($rent)) {
+            $this->rents->add($rent);
+            $rent->setBook($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRent(Rent $rent): static
+    {
+        if ($this->rents->removeElement($rent)) {
+            // set the owning side to null (unless already changed)
+            if ($rent->getBook() === $this) {
+                $rent->setBook(null);
+            }
+        }
+
+        return $this;
     }
 }

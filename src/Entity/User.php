@@ -40,11 +40,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 128, nullable: true)]
     private ?string $username = null;
 
-    #[ORM\OneToMany(mappedBy: 'borrowed_by', targetEntity: Rent::class)]
-    private Collection $rents;
-
     #[ORM\Column(type: 'boolean')]
     private $isVerified = false;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Rent::class)]
+    private Collection $rents;
 
     public function __construct()
     {
@@ -157,6 +157,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Rent>
      */
@@ -169,7 +181,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->rents->contains($rent)) {
             $this->rents->add($rent);
-            $rent->setBorrowedBy($this);
+            $rent->setUser($this);
         }
 
         return $this;
@@ -179,22 +191,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->rents->removeElement($rent)) {
             // set the owning side to null (unless already changed)
-            if ($rent->getBorrowedBy() === $this) {
-                $rent->setBorrowedBy(null);
+            if ($rent->getUser() === $this) {
+                $rent->setUser(null);
             }
         }
-
-        return $this;
-    }
-
-    public function isVerified(): bool
-    {
-        return $this->isVerified;
-    }
-
-    public function setIsVerified(bool $isVerified): static
-    {
-        $this->isVerified = $isVerified;
 
         return $this;
     }

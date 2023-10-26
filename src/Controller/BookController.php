@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Book;
+use App\Entity\Rent;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -37,15 +40,37 @@ class BookController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/rent', name: 'rent')]
     public function rentBook(int $id){
-        # Affecte le livre en tant qu'emprunt à l'utilisateur en cours
-        return new Response($id);
+        /** @var User $user */
+        $user = $this->getUser();
+        if(!$user){
+            return $this->redirectToRoute('app_login');
+        }
+        $book = $this->em->getRepository(Book::class)->findOneBy(['id' => $id]);
+        $rent = new Rent();
+        $this->em->persist($rent);
+        $book->addRent($rent);
+        $user->addRent($rent);
+        $this->em->flush();
+        return $this->redirectToRoute('app_book_info', ['id' => $id]);
 
     }
 
+    #[Route('/{id}/restitute', name: 'restitute')]
     public function returnBook(int $id){
-        # Retourne le livre & l'affiche de nouveau dans la liste
-        return new Response($id);
+        /** @var User $user */
+        $user = $this->getUser();
+        if(!$user){
+            return $this->redirectToRoute('app_login');
+        }
+        $book = $this->em->getRepository(Book::class)->findOneBy(['id' => $id]);
+        $rent = $this->em->getRepository(Rent::class)->findOneBy(['user' => $user, 'book' => $book]);
+        $book->getRents()->clear();
+        $user->getRents()->clear();
+        $this->em->remove($rent);
+        $this->em->flush();
+        return $this->redirectToRoute('app_book_info', ['id' => $id]);
 
     }
 
@@ -53,5 +78,15 @@ class BookController extends AbstractController
         # Retourne la liste des emprunts de l'utilisateur en cours
         return new Response($id);
 
+    }
+
+    #[IsGranted('ROLE_ADMIN', statusCode: 423)]
+    #[Route('/{id}/archived', name: ('archived'))]
+    public function archiveBook(int $id){
+        $book = $this->em->getRepository(Book::class)->findOneBy(['id' => $id]);
+        $book->setArchived(true);
+        $this->em->persist($book);
+        $this->em->flush();
+        return $this->redirectToRoute('app_book_info', ['id' => $id]);
     }
 }

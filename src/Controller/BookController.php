@@ -31,7 +31,7 @@ class BookController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: ('info'))]
+    #[Route('/info/{id}', name: ('info'))]
     public function getBooksInfo(int $id){
         # Affiche les informations d'un bouquin
         $book = $this->em->getRepository(Book::class)->findOneBy(['id' => $id]);
@@ -40,7 +40,7 @@ class BookController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/rent', name: 'rent')]
+    #[Route('/rent/{id}', name: 'rent')]
     public function rentBook(int $id){
         /** @var User $user */
         $user = $this->getUser();
@@ -57,7 +57,7 @@ class BookController extends AbstractController
 
     }
 
-    #[Route('/{id}/restitute', name: 'restitute')]
+    #[Route('/restitute/{id}', name: 'restitute')]
     public function returnBook(int $id){
         /** @var User $user */
         $user = $this->getUser();
@@ -74,14 +74,18 @@ class BookController extends AbstractController
 
     }
 
-    public function myBooks(){
-        # Retourne la liste des emprunts de l'utilisateur en cours
-        return new Response($id);
-
+    #[Route('/mybooks', name: ('my_books'))]
+    public function myBooks()
+    {
+        $rentList = $this->em->getRepository(Rent::class)->findBy(['user' => $this->getUser()]);
+        
+        return $this->render('book/mybook.html.twig', [
+            'rentList' => $rentList,
+        ]);
     }
 
     #[IsGranted('ROLE_ADMIN', statusCode: 423)]
-    #[Route('/{id}/archived', name: ('archived'))]
+    #[Route('/archived/{id}', name: ('archived'))]
     public function archiveBook(int $id){
         $book = $this->em->getRepository(Book::class)->findOneBy(['id' => $id]);
         $book->setArchived(true);

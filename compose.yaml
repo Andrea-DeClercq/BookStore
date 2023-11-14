@@ -1,21 +1,51 @@
-version: '3'
-
+version: "3.8"
 services:
-###> doctrine/doctrine-bundle ###
-  database:
-    image: postgres:${POSTGRES_VERSION:-15}-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
-    volumes:
-      - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+    # Mysql database container
+    database:
+      image: mysql
+      container_name: db_book_store
+      restart: always
+      volumes:
+          - db-data:/var/lib/mysql
+      environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: book_store
+        MYSQL_USER: user
+        MYSQL_PASSWORD: user
+      ports:
+        - "3306:3306"
+      networks:
+          - net_symf
+
+    phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      environment:
+        PMA_HOST: database
+        PMA_USER: user
+        PMA_PASSWORD: user
+        MYSQL_ROOT_PASSWORD: root
+      ports:
+        - "8080:80"
+      depends_on:
+        - database
+      networks:
+        - net_symf
+
+    # Symfony apache project container
+    www:
+        build: docker/php
+        container_name: book_store_symfony
+        ports:
+          - "8000:80"
+        volumes:
+            - ./docker/php/vhosts:/etc/apache2/sites-enabled
+            - ./:/var/www
+        restart: always
+        networks:
+            - net_symf
+
+networks:
+    net_symf:
 
 volumes:
-###> doctrine/doctrine-bundle ###
-  database_data:
-###< doctrine/doctrine-bundle ###
+    db-data:

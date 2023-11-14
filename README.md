@@ -6,8 +6,8 @@ Pour lancer le build & run le docker :
 docker-composer up --build
 ```
 
-```
 Pour lancer plus tard après le build s'il n'est pas en cours d'éxécution
+```
 docker-composer up -d
 ```
 
